@@ -8,6 +8,23 @@ page) on a number of open-science clusters.
 In each of the following instructions, the top-level AthenaK directory is denoted
 ``$athenak``, and the relative build directory is denoted ``$build``.
 
+List of Machines:
+-----------------
+- :ref:`OLCF: Frontier (MI250X GPU nodes) <Frontier>`
+- :ref:`ALCF: Aurora (PVC GPU nodes) <Aurora>`
+- :ref:`ALCF: Polaris (A100 GPU nodes) <Polaris>`
+- :ref:`NERSC: Perlmutter (A100 GPU nodes) <Perlmutter>`
+- :ref:`TACC: Stampede2 (Skylake and Ice Lake nodes) <Stampede2>`
+- :ref:`TACC: Stampede2 (Knights Landing nodes) <Stampede2KNL>`
+- :ref:`NCSA: DeltaAI (GH200 GPU nodes) <DeltaAI>`
+- :ref:`Flatiron Institute: Rusty (A100 GPU nodes) <Rusty>`
+- :ref:`Princeton: Della (A100 GPU nodes) <Della>`
+- :ref:`Princeton: Stellar (Cascade Lake nodes) <Stellar>`
+- :ref:`IAS: Apollo (A100 GPU nodes) <Apollo>`
+- :ref:`PSU: Roar Collab (A100 GPU nodes) <Roar>`
+
+.. _Frontier:
+
 OLCF: Frontier (MI250X GPU nodes)
 ---------------------------------
 
@@ -170,6 +187,8 @@ directory structure mirrors ``/lustre/orion/<project>``. Files can only be trans
 between them with something like Globus (the ``OLCF DTN`` endpoint works for both). Small
 files can be easily transferred through the shared home directory.
 
+.. _Aurora:
+
 ALCF: Aurora (PVC GPU nodes)
 ----------------------------
 
@@ -262,6 +281,8 @@ wrapper script located at ``/soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh``.
    NTHREADS=1
 
    mpiexec -np ${NTOTRANKS} --ppn ${NRANKS_PER_NODE} -d ${NDEPTH} --cpu-bind numa --env OMP_NUM_THREADS=${NTHREADS} -env OMP_PLACES=threads /soft/tools/mpi_wrapper_utils/gpu_tile_compact.sh ./athena -i ../../inputs/grmhd/gr_fm_torus_sane_8_4.athinput
+
+.. _Polaris:
 
 ALCF: Polaris (A100 GPU nodes)
 ------------------------------
@@ -447,6 +468,8 @@ jobs, starting from the beginning only in cases where no restart files can be fo
    done
    wait
 
+.. _Perlmutter:
+
 NERSC: Perlmutter (A100 GPU nodes)
 ----------------------------------
 
@@ -510,6 +533,10 @@ An example run script is given below.
    cd $PSCRATCH/working_dir
    srun ./athena -i turb.athinput
 
+.. FIXME Machine is offline.
+
+.. _Stampede2:
+
 TACC: Stampede2 (Skylake and Ice Lake nodes)
 --------------------------------------------
 
@@ -563,6 +590,10 @@ Source code, executables, input files, and scripts can be placed in ``$HOME`` or
 ``$WORK``. Scratch space appropriate for large I/O is under ``$SCRATCH``, though this is
 regularly purged. Archival should use space on Ranch.
 
+.. FIXME Machine is offline.
+
+.. _Stampede2KNL:
+
 TACC: Stampede2 (Knights Landing nodes)
 ---------------------------------------
 
@@ -615,6 +646,8 @@ available.
 Source code, executables, input files, and scripts can be placed in ``$HOME`` or
 ``$WORK``. Scratch space appropriate for large I/O is under ``$SCRATCH``, though this is
 regularly purged. Archival should use space on Ranch.
+
+.. _DeltaAI:
 
 NCSA: DeltaAI (GH200 GPU nodes)
 -------------------------------
@@ -671,6 +704,8 @@ should be stored in your home directory or a shared projects directory. The HDD 
 work directories affiliated with your project (``/work/hdd/<project>/<user>`` and
 ``/work/nvme/<project>/<user>``) should be used as scratch space. Avoid I/O operations to
 and from your home directory while running.
+
+.. _Rusty:
 
 Flatiron Institute: Rusty (A100 GPU nodes)
 ------------------------------------------
@@ -731,6 +766,8 @@ GPU, not 2), but this is a workaround for a bug in the current Slurm version ins
 
 Scratch space appropriate for large I/O is under ``/mnt/ceph/users/``.
 
+.. _Della:
+
 Princeton: Della (A100 GPU nodes)
 ---------------------------------
 
@@ -785,6 +822,8 @@ slightly larger than 128G.
 
 Scratch space appropriate for large I/O is under ``/scratch/gpfs/``.
 
+.. _Stellar:
+
 Princeton: Stellar (Cascade Lake nodes)
 ---------------------------------------
 
@@ -831,6 +870,8 @@ The Cascade Lake nodes have 96 CPU cores per node, so generally
 ``<tasks_per_node> = 96`` and ``<tasks> = <nodes> * 96``.
 
 Scratch space appropriate for large I/O is under ``/scratch/gpfs/``.
+
+.. _Apollo:
 
 IAS: Apollo (A100 GPU nodes)
 ----------------------------
@@ -880,6 +921,8 @@ Example Slurm script
 
    cd <job_directory>
    srun -n 4 $athenak/$build/src/athena --kokkos-map-device-id-by=mpi_rank <athenak options>
+
+.. _Roar:
 
 PSU: Roar Collab (A100 GPU nodes)
 ---------------------------------
