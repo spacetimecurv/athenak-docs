@@ -33,13 +33,32 @@ Command-line arguments
 - ``--mpicpu``: Runs tests for MPI-enabled CPU configurations.
 - ``--gpu``: Runs tests for GPU configurations.
 - ``--test``: Runs a specific set of test(s) by name. This accepts a space-separated list of
-  test names and/or directories and will run all the tests specified and all the tests found
-  in the directories recursively. The test name(s) must include one of the following
-  suffixes:
+  test files **and/or directories**. All of the files listed and every test found by
+  recursively searching the listed directories will be run, so you can select a single test
+  file, a single folder (e.g. ``test_suite/nr``), or any mix of the two.
 
-  - ``_cpu`` for CPU tests.
-  - ``_mpicpu`` for MPI CPU tests.
-  - ``_gpu`` for GPU tests.
+The device flags (``--cpu``, ``--mpicpu``, ``--gpu``) can be combined. For example, passing
+both ``--cpu`` and ``--gpu`` runs the CPU tests and then the GPU tests sequentially.
+
+Test type selection with ``--test``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The type of each test (CPU, MPI CPU, or GPU) is inferred from its file name, which must
+contain one of the following markers:
+
+- ``_cpu`` for CPU tests.
+- ``_mpicpu`` for MPI CPU tests.
+- ``_gpu`` for GPU tests.
+
+When ``--test`` is used, the behavior depends on whether any device flags are also given:
+
+- **No device flag**: the script scans the requested files and directories, determines which
+  test types are present, and runs all of them. For example,
+  ``--test test_suite/chemistry`` runs every CPU, MPI CPU, and GPU test found in that folder.
+- **With one or more device flags**: only the matching subset is run. For example,
+  ``--test test_suite/nr test_suite/gr --cpu`` runs only the CPU tests in the ``nr`` and
+  ``gr`` folders. If a requested device flag matches no tests in the given paths, the script
+  raises an error.
 
 Example commands
 ~~~~~~~~~~~~~~~~~
@@ -58,19 +77,25 @@ Example commands
    # Run GPU tests
    python run_test_suite.py --gpu <gpu_flags>
 
-   # Run multiple test types
+   # Run multiple test types at once (CPU then GPU, sequentially)
    python run_test_suite.py --gpu <gpu_flags> --cpu <cpu_flags>
 
-   # Run a specific test
+   # Run a single test file
    python run_test_suite.py --test test_suite/subdirectory/test_example_cpu.py
 
-   # Run all tests in a directory
-   python run_test_suite.py --test test_suite/subdirectory
+   # Run every test in a single folder (auto-detects CPU/MPI CPU/GPU tests present)
+   python run_test_suite.py --test test_suite/chemistry
 
-   # Run CPU and GPU tests in a directory
+   # Run several folders and/or files at once
+   python run_test_suite.py --test test_suite/nr test_suite/gr
+
+   # Run only the CPU tests found in the given folders
+   python run_test_suite.py --test test_suite/nr test_suite/gr --cpu <cpu_flags>
+
+   # Run the CPU and GPU tests in a folder
    python run_test_suite.py --test test_suite/subdirectory --gpu <gpu_flags> --cpu <cpu_flags>
 
-   # Run a subset of CPU tests
+   # Mix files and folders, restricted to CPU tests
    python run_test_suite.py --test test_suite/subdirectory/test_example_cpu.py test_suite/subdirectory_2 --cpu <cpu_flags>
 
 Behavior
@@ -101,15 +126,22 @@ arguments:
    (``Kokkos_ENABLE_CUDA=On``), then runs all tests in the ``test_suite`` directory that
    contain ``_gpu`` in their name using ``pytest``.
 
-#. **Subset of tests execution**: If the ``--test`` argument is provided, the script
-   validates each provided test name to ensure it contains one of the suffixes ``_cpu``,
-   ``_mpicpu``, or ``_gpu``, and for each directory finds all tests within it and verifies
-   they have the proper suffixes. Invalid names cause the script to exit with an error.
-   Otherwise, the script runs the specified test(s) using ``pytest``. If multiple tests or
-   directories are specified then it will run all tests of all types; if any combination of
-   ``--cpu``, ``--gpu``, or ``--mpicpu`` are passed as well, then it will run only those
-   tests. Note the test name must include the full path to the file or directory, usually
-   ``test_suite/subdirectory/testname.py``.
+#. **Subset of tests execution**: If the ``--test`` argument is provided, the script expands
+   the requested paths, treating each entry as either a test file or a directory that is
+   searched recursively for ``*.py`` files. It then inspects the resulting file names to
+   determine which test types (CPU, MPI CPU, GPU) are present.
+
+   - If no device flag is given, the script runs every test type it found in the requested
+     paths.
+   - If one or more of ``--cpu``, ``--mpicpu``, or ``--gpu`` are given, only the matching
+     tests are run. If a requested device flag matches no tests in the given paths, the
+     script raises a ``RuntimeError``.
+   - If the requested paths contain no valid test files at all, the script raises a
+     ``RuntimeError``.
+
+   Paths must be given relative to the ``/tst`` directory, e.g.
+   ``test_suite/subdirectory/testname.py`` for a file or ``test_suite/subdirectory`` for a
+   folder.
 
 #. **Log file management**: At the beginning of the script, the log file (``test_log.txt``)
    is removed if it exists to ensure a fresh log file is created during the script's
