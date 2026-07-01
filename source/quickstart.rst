@@ -104,4 +104,4 @@ Next steps
   ``vis/python/plot_slice.py``.
 - Override parameters on the command line, e.g. increase the resolution with
   ``mesh/nx1=512`` or change the Riemann solver with ``hydro/rsolver=hllc``.
-- Read :doc:`running` for the full reference on running the code, outputs, and analysis.
+- Read :doc:`running_the_code` for the full reference on running the code, outputs, and analysis.

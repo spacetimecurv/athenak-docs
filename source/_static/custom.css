@@ -9,3 +9,31 @@
 .toc-overlay {
   display: none !important;
 }
+
+/* --------------------------------------------------------------------------
+   Softer, Alabaster-like typography: serif body/headings, slightly smaller
+   and lighter than Furo's default sans-serif.
+   -------------------------------------------------------------------------- */
+/* Furo declares these variables on `body`, so we override them there. */
+body {
+  --font-stack: Georgia, Charter, "Palatino Linotype", "Book Antiqua", serif;
+  --font-stack--headings: Georgia, Charter, "Palatino Linotype", "Book Antiqua", serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* Slightly smaller, more relaxed body text */
+.content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Keep code in a monospace stack regardless of the serif body font */
+code, pre, kbd, samp,
+.highlight,
+.sig,
+.pre {
+  font-family: var(--font-stack--monospace);
+}

@@ -34,8 +34,16 @@ allowed for documentation purposes. Both block names and parameter names are cas
 sensitive. Note that tabs should not be used in the input file as the parser does not
 support them.
 
-List of input blocks and parameters
-------------------------------------
+.. note::
+
+   This page documents the **general, physics-agnostic blocks** that appear in nearly
+   every input file. Options specific to a particular physics module (for example the
+   ``<hydro>``, ``<mhd>``, ``<radiation>``, ``<z4c>``, and ``<coord>`` blocks) or to an
+   individual problem (``<problem>``) are documented alongside the physics or problem
+   generator that owns them. See :ref:`physics-and-problem-blocks` below for pointers.
+
+General blocks
+--------------
 
 - ``<comment>`` (optional): for documentation purposes
 
@@ -45,7 +53,7 @@ List of input blocks and parameters
 
 - ``<job>`` (**mandatory**)
 
-  - ``problem_id`` (**mandatory**): used in the output file names
+  - ``basename`` (**mandatory**): base name used for all output file names
 
 - ``<output[n]>`` (optional): output information (``[n]`` is an integer)
 
@@ -65,89 +73,49 @@ List of input blocks and parameters
 - ``<time>`` (**mandatory**): the CFL number and limit of the simulation
 
   - ``cfl_number`` (**mandatory**): the Courant, Friedrichs, & Lewy (CFL) Number
-  - ``nlim`` (**mandatory**): time step limit (-1 = infinity)
+  - ``nlim`` (**mandatory**): time step (cycle) limit (-1 = infinity)
   - ``tlim`` (**mandatory**): time limit in computing time
   - ``start_time`` (optional): time at the beginning of new simulation (default = 0)
-  - ``integrator`` (optional): time-integration scheme. Choices:
+  - ``integrator`` (optional): time-integration scheme (e.g. ``rk2`` [*default*],
+    ``rk3``)
 
-    - ``rk2`` (*default*): second-order accurate Runge-Kutta/Heun's method
-    - ``rk3``: third-order accurate Strong Stability Preserving (SSP) variant
-
-- ``<mesh>`` (**mandatory**): grid configuration
+- ``<mesh>`` (**mandatory**): grid geometry
 
   - ``nx1, nx2, nx3`` (**mandatory**): the number of cells in the x1, x2, x3 directions,
     respectively (``nx3=1`` means 2D, ``nx2=1`` implies 1D)
   - ``x1min, x1max``, etc. (**mandatory**): positions of the minimum and maximum
     surfaces (i.e., the box size)
   - ``ix1_bc, ox1_bc``, etc. (**mandatory**): boundary conditions
-  - ``refinement`` (optional): enabling adaptive mesh refinement (default = none)
-  - ``numlevel`` (optional): the number of AMR refinement levels (default = 1)
-  - ``derefine_count`` (optional): the number of timesteps required before derefinement
-    (default = 1)
+
+  .. note::
+
+     Mesh refinement is configured in the separate ``<mesh_refinement>`` block (with
+     ``<refined_region#>`` and ``<amr_criterion#>`` blocks), **not** in ``<mesh>``. See
+     :doc:`smr` and :doc:`amr`.
 
 - ``<meshblock>`` (optional): domain decomposition unit
 
-  - ``nx1, nx2, nx3`` (mandatory): the number of cells per MeshBlock (decomposition
-    unit) in x1, x2, x3, respectively
+  - ``nx1, nx2, nx3`` (**mandatory**): the number of cells per MeshBlock in x1, x2, x3,
+    respectively
 
-- ``<refinement[n]>`` (optional): (static) refinement regions (``[n]`` is an integer)
+.. _physics-and-problem-blocks:
 
-  - ``x1min, x1max``, etc. (mandatory): positions of the refined regions
-  - ``level`` (mandatory): refinement level (root level = 0)
+Physics and problem blocks
+--------------------------
 
-- ``<hydro>`` (**optional**): parameters of hydrodynamics
+Which physics a run includes is determined by which blocks are present in the input file.
+The parameters for these blocks are documented with the physics or problem that owns them
+(dedicated physics-module pages are forthcoming):
 
-  - ``iso_sound_speed`` (**mandatory** for isothermal EOS): sound speed in the
-    isothermal EOS
-  - ``gamma`` (**mandatory** for adiabatic EOS): adiabatic index
-  - ``dfloor``, ``pfloor`` (optional): density, pressure, and passive scalar
-    concentration floors
-  - ``gamma_max`` (optional): maximum Lorentz factor in SR and GR
-
-- ``<mhd>`` (**optional**): parameters of MHD
-
-  - ``iso_sound_speed`` (**mandatory** for isothermal EOS): sound speed in the
-    isothermal EOS
-  - ``gamma`` (**mandatory** for adiabatic EOS): adiabatic index
-  - ``dfloor``, ``pfloor`` (optional): density, pressure, and passive scalar
-    concentration floors
-  - ``gamma_max`` (optional): maximum Lorentz factor in SR and GR (default = 1000)
-
-- ``<radiation>`` (**optional**): parameters of radiation
-
-  - ``nlevel`` (mandatory): refinement level for geodesic mesh
-  - ``rotate_geo`` (optional): rotate geodesic mesh to reduce grid alignment (default:
-    true)
-  - ``angular_fluxes`` (optional) (default: true): flag to potentially disable angular
-    fluxes
-  - ``reconstruct`` (optional): set radiation spatial reconstruction algorithm (options:
-    ``dc``, ``ppm4``, ``ppmx``, ``wenoz``) (default: ``plm``)
-  - ``rad_source`` (optional): enables radiation source term (default: true)
-  - ``fixed_fluid`` (optional): if true, solve transport problem without evolving
-    (magneto)hydrodynamics (default: false)
-  - ``affect_fluid`` (optional): if false, apply source term to intensity field, but do
-    not feed back on the fluid (i.e., disable source term update of :math:`T^0_\mu` from
-    differences in pre- and post-coupling radiation moments; *this is non-conservative*)
-    (default: true)
-  - ``arad`` (mandatory if ``<units>`` excluded and ``<radiation>/rad_source=true``):
-    radiation constant in code units
-  - ``kappa_s`` (mandatory if ``<radiation>/rad_source=true``): scattering opacity in
-    code units (or cgs units if ``<units>`` included)
-  - ``kappa_a`` (mandatory if ``<radiation>/rad_source=true`` and
-    ``<radiation>/power_opacity=false``): absorption opacity in code units (or cgs units
-    if ``<units>`` included)
-  - ``power_opacity`` (optional): enable Kramer's type absorption opacity (default:
-    false)
-  - ``beam_source`` (optional): flag to enable allocation of beam mask, for use with
-    radiation beam source (default: false)
-  - ``dii_dt`` (mandatory if ``<radiation>/beam_source``): dI/dt for angular bins
-    flagged in beam mask
-
-- ``<coord>`` (depends): parameters for GR coordinate system
-
-  - ``a`` (depends): spin of black hole
-
-- ``<problem>`` (optional): problem-specific parameters
+- ``<hydro>`` — hydrodynamics (EOS, reconstruction, Riemann solver, floors, ...)
+- ``<mhd>`` — magnetohydrodynamics
+- ``<radiation>`` — radiation transport
+- ``<z4c>`` — numerical relativity (Z4c)
+- ``<coord>`` — coordinate system (e.g. black-hole spin for GR)
+- ``<mesh_refinement>``, ``<refined_region#>``, ``<amr_criterion#>`` — mesh refinement;
+  see :doc:`smr` and :doc:`amr`
+- ``<problem>`` — problem-specific parameters read by the problem generator; see
+  :doc:`problem_generators`
 
 Changes from Athena++
 ---------------------
