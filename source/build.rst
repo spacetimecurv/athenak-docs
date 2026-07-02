@@ -82,7 +82,7 @@ Use these CMake options as needed:
 - ``-DAthena_ENABLE_OPENMP=ON``: enable OpenMP parallelism
 - ``-DAthena_SINGLE_PRECISION=ON``: build in single precision
 - ``-DAthena_ENABLE_RNS=ON``: enable RNS (rotating neutron star) support
-- ``-DPROBLEM=<name>``: select a custom problem generator in ``src/pgen/``
+- ``-DPROBLEM=<dir/name>``: select a custom problem generator in ``src/pgen/dir``
   (defaults to ``built_in_pgens``)
 - ``-DCMAKE_CXX_FLAGS="..."``: append custom compiler flags
 
@@ -99,8 +99,8 @@ Example with MPI + OpenMP:
 Custom problem generators
 -------------------------
 
-Use ``-DPROBLEM=<name>`` to compile a specific problem generator file from
-``src/pgen/``. Built-in test problem generators in ``src/pgen/tests`` are compiled
+Use ``-DPROBLEM=<dir/name>`` to compile a specific problem generator file from
+``src/pgen/dir``. Built-in test problem generators in ``src/pgen/tests`` are compiled
 by default.
 
 Build outputs

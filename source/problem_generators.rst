@@ -55,7 +55,6 @@ The problem generators dispatched in ``src/pgen/pgen.cpp`` are:
 - ``shwave``
 - ``z4c_boosted_puncture``
 - ``z4c_linear_wave``
-- ``spherical_collapse``
 - ``diffusion``
 
 Where to find existing examples

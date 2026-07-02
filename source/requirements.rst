@@ -1,13 +1,8 @@
 Requirements
 ============
 
-Summarize required and optional software dependencies for AthenaK.
-
-Core requirements
------------------
-
 AthenaK is designed to keep external dependencies minimal ("hermetic builds").
-The core requirements are:
+The **core requirements** are:
 
 - Kokkos Core library
 - CMake (3.10 or later in this repository)
@@ -29,7 +24,7 @@ Optional requirements
 ---------------------
 
 - MPI library for distributed-memory parallelism
-- Device-aware MPI (recommended/required for GPU-aware MPI workflows)
+- Device-aware MPI (required for GPU-aware MPI workflows)
 - Python 3 for many analysis scripts
 
 Related pages

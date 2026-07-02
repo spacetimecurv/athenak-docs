@@ -1,14 +1,13 @@
 The Mesh and MeshBlocks
 =======================
 
-Every AthenaK simulation is defined on a **uniform Cartesian mesh**: a rectangular domain
+The root grid in every AthenaK simulation is defined on a **uniform Cartesian mesh**: a rectangular domain
 divided into equally sized cells. That mesh is in turn partitioned into rectangular
 **MeshBlocks**, which are the units of computation, parallel decomposition, and (when enabled)
 mesh refinement. Understanding the distinction between the ``<mesh>`` and ``<meshblock>``
 blocks is essential, and mixing them up is one of the most common configuration mistakes.
 
-Mental model
-------------
+Blocks in the input file are used to specify the parameters of the Mesh and meshBlocks.
 
 - ``<mesh>`` defines the **full simulation domain** and its **total resolution**.
 - ``<meshblock>`` defines how that domain is **partitioned into blocks**.
@@ -111,7 +110,9 @@ Validation rules to remember
 Next steps
 ----------
 
-Once the root mesh and MeshBlock decomposition are set, you can add refinement on top of it:
+Many AthenaK simulations use only the uniform Cartesian root grid,
+divided into MeshBlocks.  However, once the root mesh and MeshBlock
+decomposition are set, you can add refinement on top of it:
 
 - :doc:`smr` — fixed, geometrically-specified refined regions.
 - :doc:`amr` — refinement that adapts to the solution at run time.
