@@ -10,11 +10,17 @@ From the repository root:
 
 .. code-block:: bash
 
-   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake -B build
    cmake --build build -j
 
 This project forbids in-source builds, so always use ``-B build`` (or another
 separate build directory).
+
+.. note::
+
+   AthenaK defaults to a ``Release`` build, so ``-DCMAKE_BUILD_TYPE=Release`` is
+   not needed. Pass ``-DCMAKE_BUILD_TYPE=Debug`` only when you specifically want a
+   debug build.
 
 CPU architecture tuning
 -----------------------
@@ -23,9 +29,7 @@ For CPU builds, Kokkos can optimize for the host architecture:
 
 .. code-block:: bash
 
-   cmake -S . -B build \
-     -DCMAKE_BUILD_TYPE=Release \
-     -DKokkos_ARCH_NATIVE=ON
+   cmake -B build -DKokkos_ARCH_NATIVE=ON
    cmake --build build -j
 
 You can also set explicit architecture keywords (for example ``Kokkos_ARCH_SKX``)
@@ -41,8 +45,7 @@ NVIDIA V100 example:
 
 .. code-block:: bash
 
-   cmake -S . -B build \
-     -DCMAKE_BUILD_TYPE=Release \
+   cmake -B build \
      -DKokkos_ENABLE_CUDA=ON \
      -DKokkos_ARCH_VOLTA70=ON \
      -DCMAKE_CXX_COMPILER=$PWD/kokkos/bin/nvcc_wrapper
@@ -52,8 +55,7 @@ NVIDIA A100 example:
 
 .. code-block:: bash
 
-   cmake -S . -B build \
-     -DCMAKE_BUILD_TYPE=Release \
+   cmake -B build \
      -DKokkos_ENABLE_CUDA=ON \
      -DKokkos_ARCH_AMPERE80=ON \
      -DCMAKE_CXX_COMPILER=$PWD/kokkos/bin/nvcc_wrapper
@@ -63,8 +65,7 @@ AMD MI250X example:
 
 .. code-block:: bash
 
-   cmake -S . -B build \
-     -DCMAKE_BUILD_TYPE=Release \
+   cmake -B build \
      -DKokkos_ENABLE_HIP=ON \
      -DKokkos_ARCH_ZEN3=ON \
      -DKokkos_ARCH_VEGA90A=ON \
@@ -90,8 +91,7 @@ Example with MPI + OpenMP:
 
 .. code-block:: bash
 
-   cmake -S . -B build \
-     -DCMAKE_BUILD_TYPE=Release \
+   cmake -B build \
      -DAthena_ENABLE_MPI=ON \
      -DAthena_ENABLE_OPENMP=ON
    cmake --build build -j

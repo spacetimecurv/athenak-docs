@@ -44,6 +44,7 @@ The problem generators dispatched in ``src/pgen/pgen.cpp`` are:
 - ``cpaw``
 - ``gr_bondi``
 - ``cshock``
+- ``diffusion``
 - ``linear_wave``
 - ``implode``
 - ``gr_monopole``
@@ -55,7 +56,12 @@ The problem generators dispatched in ``src/pgen/pgen.cpp`` are:
 - ``shwave``
 - ``z4c_boosted_puncture``
 - ``z4c_linear_wave``
-- ``diffusion``
+
+In addition, two pre-defined unit-test problem generators are built in by default:
+
+- ``eos_compose`` — exercises the tabulated (CompOSE) equation-of-state machinery.
+- ``gauss_legendre`` — exercises the Gauss–Legendre quadrature used for spherical
+  grids and surface integrals.
 
 Where to find existing examples
 -------------------------------

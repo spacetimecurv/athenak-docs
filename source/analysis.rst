@@ -4,6 +4,35 @@ Analysis
 As discussed in :doc:`outputs`, AthenaK supports multiple output formats. Depending on
 the format, there may be multiple ways to analyze the data.
 
+Using AI assistants to make plots
+---------------------------------
+
+Modern AI coding assistants (for example those built into editors such as Cursor, or
+command-line agents) are often the fastest way to explore and visualize AthenaK output,
+and they increasingly make many of the simplest bespoke plotting scripts unnecessary.
+Rather than hunting for or maintaining a one-off script, you can describe the figure you
+want and let the assistant write and run the plotting code for you.
+
+A few tips that make this work well:
+
+- **Point the assistant at the data readers.** AthenaK ships small, well-documented
+  readers in ``vis/python`` (for example ``bin_convert.py`` for ``.bin`` files). Ask the
+  assistant to use these so it parses the file format correctly instead of guessing. The
+  ASCII ``.hst`` and ``.tab`` files can be read directly with ``numpy``.
+- **Be specific about the request.** State the input file, the variable, the slice
+  (plane and location for 3D data), the colormap, the normalization (linear/log,
+  ``vmin``/``vmax``), and whether you want a single frame or an animation over a sequence
+  of dumps.
+- **Iterate.** Ask for adjustments ("use a log scale", "overplot the analytic solution",
+  "add the AMR block boundaries") the same way you would refine any plot.
+- **Verify the physics.** AI-generated code is convenient but not infallible: sanity
+  check units, derived quantities, and slice locations against a known case before
+  trusting a new figure.
+
+For quantitative or repeatable analysis you may still want a committed script, but for
+quick inspection and figure generation an AI assistant working directly against the
+output files is usually the shortest path.
+
 Repository analysis tools
 -------------------------
 

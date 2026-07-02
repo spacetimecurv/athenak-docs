@@ -14,13 +14,70 @@ for the filename. This is useful if the same variable needs to be output in diff
 ways, e.g., having 2D sliced outputs in both the x-y and x-z planes at a relatively
 frequent cadence and full 3D grid dumps only occasionally.
 
-Full grid and sliced grid
--------------------------
+Output types
+------------
 
-AthenaK supports dumping grid variables to both legacy VTK (``file_type = vtk``) and
-custom AthenaK binary blobs (``file_type = bin``). **VTK support is limited to unigrid
-runs on a single MPI task and is therefore only useful for small tests.** For larger
-runs, binary files are more appropriate.
+The ``file_type`` parameter selects the kind of output. The full set of supported types
+is:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 12 40 48
+
+   * - ``file_type``
+     - Output
+     - Notes
+   * - ``bin``
+     - AthenaK binary mesh dump
+     - Full or sliced grid; supports SMR/AMR and parallel (MPI) I/O. Preferred for
+       production runs. See :doc:`analysis` for reading ``.bin`` files.
+   * - ``vtk``
+     - Legacy (serial) VTK mesh dump
+     - Full or sliced grid. Works with MPI, but **only for unigrid runs — VTK does not
+       support SMR/AMR.** Readable by ParaView, VisIt, etc.
+   * - ``tab``
+     - ASCII table
+     - One-dimensional data only; multidimensional grids must be sliced first.
+   * - ``hst``
+     - History file
+     - Global reductions (mass, momentum, energy, constraint norms, …); ASCII.
+   * - ``rst``
+     - Restart / checkpoint
+     - Complete state of the run, used to restart with ``-r``.
+   * - ``pdf``
+     - PDF / histogram
+     - One- or two-dimensional histograms of grid variables.
+   * - ``cbin``
+     - Coarsened binary
+     - Down-sampled (coarsened) binary dump; optionally computes moments.
+   * - ``sph``
+     - Interpolated spherical surface
+     - Data interpolated onto a latitude/longitude grid at a given radius; written as VTK.
+   * - ``cart``
+     - Interpolated Cartesian grid
+     - Data resampled onto a uniform Cartesian grid.
+   * - ``pvtk``
+     - Particle data (VTK)
+     - Particle positions/attributes in VTK format.
+   * - ``trk``
+     - Tracked-particle output
+     - Time series for individually tracked particles.
+   * - ``log``
+     - Event log
+     - Runtime event log.
+
+The most common grid outputs (``bin``, ``vtk``, ``tab``) are described next, followed by
+restarts, history, and the interpolated/derived output types.
+
+Full grid dumps
+---------------
+
+AthenaK can dump grid variables to either custom AthenaK binary files
+(``file_type = bin``) or legacy VTK files (``file_type = vtk``). Binary output supports
+SMR/AMR meshes and scales with MPI, so it is the appropriate choice for production runs.
+VTK output works with MPI as well but is **limited to unigrid runs (it does not support
+SMR/AMR)**; it is most convenient for small tests and for direct reading in ParaView or
+VisIt.
 
 A full grid dump would be done as follows:
 
@@ -39,6 +96,13 @@ among the most commonly used:
 - ``hydro_u`` or ``mhd_u``: conserved hydrodynamical variables for the specified fluid
   module, including any weighting by the volume form (i.e., they are densitized)
 - ``hydro_w`` or ``mhd_w``: primitive hydrodynamical variables
+
+Sliced grid dumps
+-----------------
+
+Instead of the full domain, an output block can write a lower-dimensional slice through
+the grid by specifying one or more ``slice_x#`` positions. This works with the ``bin``
+and ``vtk`` types (and, for one-dimensional data, ``tab``).
 
 A slice through the :math:`xy` plane at :math:`z=0` could be dumped using:
 
@@ -74,6 +138,31 @@ dimension. Therefore, multidimensional grids must be sliced before outputting to
 tabulated data. By default, ``tab`` outputs are written with six significant figures.
 This can be changed by setting ``data_format`` to the corresponding C-string format
 specifier (see the discussion below on history outputs).
+
+One file per MPI rank
+---------------------
+
+By default, when running with MPI the ``bin``, ``cbin``, and ``rst`` outputs use
+collective MPI-IO so that all ranks write into a *single shared file* per dump. On very
+large (e.g. exascale) runs, collective writes to one shared file can become a
+performance and filesystem bottleneck. To avoid this, these output types accept a
+``single_file_per_rank`` option:
+
+.. code-block:: text
+
+   <output1>
+   file_type = bin
+   variable  = mhd_w_bcc
+   dt        = 100.0
+   single_file_per_rank = true # each MPI rank writes its own file
+
+When ``single_file_per_rank = true``, each rank writes its own file into a per-rank
+subdirectory of the output directory, e.g. ``bin/rank_00000000/``,
+``bin/rank_00000001/``, and so on. This replaces the single collective write with many
+independent per-rank writes, which can dramatically improve I/O throughput and scaling
+on large node counts. The option defaults to ``false`` (single shared file), and is
+currently supported for the ``bin``, ``cbin``, and ``rst`` output types. Analysis tools
+that read these outputs must be aware of the per-rank directory layout.
 
 Restart files
 -------------
