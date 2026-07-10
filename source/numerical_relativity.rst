@@ -80,7 +80,7 @@ terms are enabled by default. The parameters are as follows:
 
 There are also the following miscellaneous parameters:
 
-- ``user_Sbc``: Whether or not to apply a Sommerfeld radiation condition at the boundary
+- ``user_Sbc``: Whether or not custom user boundaries should use a Sommerfeld condition
   (default: ``false``)
 
 - ``excise_chi``: Excise regions where :math:`\chi` falls below this in the history
